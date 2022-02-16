@@ -22,6 +22,7 @@ describe("Just trying out Jest and making sure it's all good", () => {
 describe("Testing the endpoints for our express app", () => {
 
     beforeAll((done) => {
+        console.log(process.env.MONGO_URL)
         mongoose.connect(process.env.MONGO_URL + '/test', { useNewUrlParser: true }, () => {
             console.log("Connected to Mongo")
             done()
@@ -51,32 +52,29 @@ describe("Testing the endpoints for our express app", () => {
 
     let createdProductId
     it("should test that the POST /products actually creates a product", async () => {
-        try {
+        
             
             const response = await request.post("/products").send(validProduct)
     
             expect(response.body._id).toBeDefined()
-        } catch (error) {
-            console.log(error)
-        }
+        
 
         createdProductId = response.body._id
     })
- let id
     it("should test that the GET /products/:id actually returns our product", async () => {
         const response = await request.get(`/products/${createdProductId}`)
-
+        
         expect(response.body.name).toBe(validProduct.name)
     })
+   
     it("should test that PUT /products/:id update our product", async()=>{
-        try {
-            const response = await request.get(`/products/${id}`)
-            expect(response.body._id).toBeDefined()
+        
+            const response = await request.put(`/products/${createdProductId}`).send(validProduct)
+
+            expect(response.body.price).toBe(validProduct.price)
             
-        } catch (error) {
-            console.log(error)
-        }
-        id = response.body._id
+      
+   
     })
     
     it("should test that the GET /products/:id returns 404 on a non-existent product", async () => {
@@ -85,14 +83,11 @@ describe("Testing the endpoints for our express app", () => {
         expect(response.status).toBe(404)
     })
 
-    afterAll(done => {
-        mongoose.connection.dropDatabase()
-            .then(() => {
-                return mongoose.connection.close()
-            })
-            .then(() => {
-                done()
-            })
-    })
+    afterAll((done) => {
+        mongoose.connection.close().then(() => {
+            done()
+          })
+      })
+    
 
 })

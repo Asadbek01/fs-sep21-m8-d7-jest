@@ -1,7 +1,7 @@
 import { app } from './app.js'
 import mongoose from "mongoose"
 
-const port = process.env.PORT || 3005
+const port = process.env.PORT || 3000
 
 
 mongoose.connect(process.env.MONGO_URL , { useNewUrlParser: true },
